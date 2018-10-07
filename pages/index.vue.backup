@@ -1,0 +1,85 @@
+<template>
+  <main>
+    <button @click="createUser()">Create User</button>
+    <button @click="updateUser()">Update User</button>
+    <h1>Admins</h1>
+    <!-- <pre>{{ admins }}</pre> -->
+    <select v-model="admin">
+      <option v-for="admin in admins.admins" :key="admin.id" :value="admin">
+        {{ admin.name }}
+      </option>
+    </select>
+    <h1>Users</h1>
+    <select v-model="user">
+      <option v-for="user in users.users" :key="user.id" :value="user">
+        {{ user.name }} <{{ user.email }}> <!-- eslint-disable-line -->
+      </option>
+    </select>
+    <button @click="sendMessage()">Send Message</button>
+    <pre>{{ message }}</pre>
+    <h1>Email</h1>
+    <pre>{{ email }}</pre>
+  </main>
+</template>
+
+<script>
+// import email from '~/email.html'
+
+export default {
+  data() {
+    return {
+      admin: null,
+      user: null,
+      message: '',
+      email
+    }
+  },
+  mounted() {
+    //
+  },
+  async asyncData({ app }) {
+    const admins = await app.$axios.$get('http://localhost:3001/api/admins')
+    const users = await app.$axios.$get('http://localhost:3001/api/users')
+    return { admins, users }
+  },
+  methods: {
+    async sendMessage() {
+      if (this.admin && this.user) {
+        const message = await this.$axios({
+          method: 'post',
+          url: 'http://localhost:3001/api/messages',
+          data: {
+            admin: this.admin.id,
+            user: this.user.id
+          }
+        })
+        this.message = message
+      }
+    },
+    async createUser() {
+      const message = await this.$axios.$get(
+        'http://localhost:3001/api/users/create'
+      )
+      this.message = message
+    },
+    async updateUser() {
+      const message = await this.$axios.$get(
+        'http://localhost:3001/api/users/update'
+      )
+      this.message = message
+    },
+    async getAdmins() {
+      const response = await this.$axios.$get(
+        'http://localhost:3001/api/admins'
+      )
+      console.log(response.admins)
+      this.admins = response.admins
+    },
+    async getUsers() {
+      const response = await this.$axios.$get('http://localhost:3001/api/users')
+      console.log(response.users)
+      console.log((this.users = response.users))
+    }
+  }
+}
+</script>
