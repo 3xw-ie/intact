@@ -36,15 +36,21 @@ module.exports = {
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
   /*
   ** Axios module configuration
   */
   axios: {
-    // See https://github.com/nuxt-community/axios-module#options
+    proxy: true
   },
-
+  proxy: {
+    '/.netlify/functions/': {
+      target: 'http://localhost:9000',
+      pathRewrite: { '^/.netlify/functions/': '' }
+    }
+  },
   /*
   ** Build configuration
   */

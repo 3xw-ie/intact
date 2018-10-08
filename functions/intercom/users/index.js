@@ -3,29 +3,29 @@ import querystring from 'querystring'
 
 export default function getIntercomUsers() {
   const postData = querystring.stringify({
-    client_id: 'd513b693-7d4b-4051-9837-eb750cd96a7e',
-    client_secret: '40b7cb28-37db-4322-a6f3-bb994a4c627d',
-    app_id: 'gkwedi39'
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
+    app_id: config.appId
   })
 
   const requestOptions = {
-    url: `https://app.intercom.io/users?${postData}`,
+    url: `${config.profilePath}?${postData}`,
     json: true,
     auth: {
-      user: 'dG9rOmI4YzI1OTkwXzE4YTJfNDI5M19hZTY4Xzk1MGIxNGRiM2U5YjoxOjA=',
+      user: token.token.token,
       pass: ''
     },
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json'
+      Accept: 'application/json'
     }
   }
 
-  return requestWrapper(requestOptions)
+  return requestWrapper(requestOptions, token)
 }
 
 /* promisify request call */
-function requestWrapper(requestOptions) {
+function requestWrapper(requestOptions, token) {
   return new Promise((resolve, reject) => {
     request(requestOptions, (err, response, body) => {
       if (err) {
@@ -33,6 +33,7 @@ function requestWrapper(requestOptions) {
       }
       // return data
       return resolve({
+        token: token,
         data: body
       })
     })
